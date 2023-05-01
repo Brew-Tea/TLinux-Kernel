@@ -186,7 +186,7 @@ struct scan_control {
 /*
  * From 0 .. 200.  Higher means more swappy.
  */
-#ifdef CONFIG_CACHY
+#ifdef CONFIG_TEA
 int vm_swappiness = 20;
 #else
 int vm_swappiness = 60;
@@ -4540,7 +4540,7 @@ static bool lruvec_is_reclaimable(struct lruvec *lruvec, struct scan_control *sc
 }
 
 /* to protect the working set of the last N jiffies */
-#ifdef CONFIG_CACHY
+#ifdef CONFIG_TEA
 static unsigned long lru_gen_min_ttl __read_mostly = HZ;
 #else
 static unsigned long lru_gen_min_ttl __read_mostly;

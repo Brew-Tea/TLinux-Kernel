@@ -123,8 +123,8 @@ config THREAD_INFO_IN_TASK
 
 menu "General setup"
 
-config CACHY
-    bool "Some kernel tweaks by CachyOS"
+config TEA
+    bool "Some kernel tweaks by Tea"
     default y
 
 config BROKEN

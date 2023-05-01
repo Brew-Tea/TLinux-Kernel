@@ -2735,7 +2735,7 @@ static void compact_nodes(void)
  * aggressively the kernel should compact memory in the
  * background. It takes values in the range [0, 100].
  */
-#ifdef CONFIG_CACHY
+#ifdef CONFIG_TEA
 unsigned int __read_mostly sysctl_compaction_proactiveness;
 #else
 unsigned int __read_mostly sysctl_compaction_proactiveness = 20;

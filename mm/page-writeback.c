@@ -71,7 +71,7 @@ static long ratelimit_pages = 32;
 /*
  * Start background writeback (via writeback threads) at this percentage
  */
-#ifdef CONFIG_CACHY
+#ifdef CONFIG_TEA
 static int dirty_background_ratio = 5;
 #else
 static int dirty_background_ratio = 10;
@@ -103,7 +103,7 @@ static unsigned long vm_dirty_bytes;
 /*
  * The interval between `kupdate'-style writebacks
  */
-#ifdef CONFIG_CACHY
+#ifdef CONFIG_TEA
 unsigned int dirty_writeback_interval = 10 * 100; /* centiseconds */
 #else
 unsigned int dirty_writeback_interval = 5 * 100; /* centiseconds */

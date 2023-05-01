@@ -1090,7 +1090,7 @@ void folio_batch_remove_exceptionals(struct folio_batch *fbatch)
  */
 void __init swap_setup(void)
 {
-#ifdef CONFIG_CACHY
+#ifdef CONFIG_TEA
 	/* Only swap-in pages requested, avoid readahead */
 	page_cluster = 0;
 #else
