@@ -6586,7 +6586,7 @@ wake_on_current(int this_cpu, struct task_struct *p)
 	if (!current->se.avg_dur || current->se.avg_dur >= sysctl_sched_migration_cost)
 		return false;
 
-	if (!p->se.avg_dur || p->se.avg_dur >= sysctl_sched_miration_cost)
+	if (!p->se.avg_dur || p->se.avg_dur >= sysctl_sched_migration_cost)
 		return false;
 
 	if (current->wakee_flips || p->wakee_flips)
