@@ -123,6 +123,8 @@ typedef int __bitwise fpi_t;
  */
 #define FPI_SKIP_KASAN_POISON	((__force fpi_t)BIT(2))
 
+atomic_long_t kswapd_waiters = ATOMIC_LONG_INIT(0);
+
 /* prevent >1 _updater_ of zone percpu pageset ->high and ->batch fields */
 static DEFINE_MUTEX(pcp_batch_high_lock);
 #define MIN_PERCPU_PAGELIST_HIGH_FRACTION (8)
@@ -3138,6 +3140,8 @@ static int rmqueue_bulk(struct zone *zone, unsigned int order,
 {
 	unsigned long flags;
 	int i, allocated = 0;
+	struct list_head *prev_tail = list->prev;
+	struct page *pos, *n;
 
 	spin_lock_irqsave(&zone->lock, flags);
 	for (i = 0; i < count; ++i) {
@@ -3145,9 +3149,6 @@ static int rmqueue_bulk(struct zone *zone, unsigned int order,
 								alloc_flags);
 		if (unlikely(page == NULL))
 			break;
-
-		if (unlikely(check_pcp_refill(page, order)))
-			continue;
 
 		/*
 		 * Split buddy pages returned by expand() are received here in
@@ -3160,7 +3161,6 @@ static int rmqueue_bulk(struct zone *zone, unsigned int order,
 		 * pages are ordered properly.
 		 */
 		list_add_tail(&page->pcp_list, list);
-		allocated++;
 		if (is_migrate_cma(get_pcppage_migratetype(page)))
 			__mod_zone_page_state(zone, NR_FREE_CMA_PAGES,
 					      -(1 << order));
@@ -3174,6 +3174,22 @@ static int rmqueue_bulk(struct zone *zone, unsigned int order,
 	 */
 	__mod_zone_page_state(zone, NR_FREE_PAGES, -(i << order));
 	spin_unlock_irqrestore(&zone->lock, flags);
+
+	/*
+	 * Pages are appended to the pcp list without checking to reduce the
+	 * time holding the zone lock. Checking the appended pages happens right
+	 * after the critical section while still holding the pcp lock.
+	 */
+	pos = list_first_entry(prev_tail, struct page, pcp_list);
+	list_for_each_entry_safe_from(pos, n, list, pcp_list) {
+		if (unlikely(check_pcp_refill(pos, order))) {
+			list_del(&pos->pcp_list);
+			continue;
+		}
+
+		allocated++;
+	}
+
 	return allocated;
 }
 
@@ -5077,6 +5093,7 @@ __alloc_pages_slowpath(gfp_t gfp_mask, unsigned int order,
 	unsigned int cpuset_mems_cookie;
 	unsigned int zonelist_iter_cookie;
 	int reserve_flags;
+	bool woke_kswapd = false;
 
 restart:
 	compaction_retries = 0;
@@ -5116,8 +5133,13 @@ restart:
 			goto nopage;
 	}
 
-	if (alloc_flags & ALLOC_KSWAPD)
+	if (alloc_flags & ALLOC_KSWAPD) {
+		if (!woke_kswapd) {
+			atomic_long_inc(&kswapd_waiters);
+			woke_kswapd = true;
+		}
 		wake_all_kswapds(order, gfp_mask, ac);
+	}
 
 	/*
 	 * The adjusted alloc_flags might result in immediate success, so try
@@ -5332,9 +5354,12 @@ nopage:
 		goto retry;
 	}
 fail:
-	warn_alloc(gfp_mask, ac->nodemask,
-			"page allocation failure: order:%u", order);
 got_pg:
+	if (woke_kswapd)
+		atomic_long_dec(&kswapd_waiters);
+	if (!page)
+		warn_alloc(gfp_mask, ac->nodemask,
+				"page allocation failure: order:%u", order);
 	return page;
 }
 

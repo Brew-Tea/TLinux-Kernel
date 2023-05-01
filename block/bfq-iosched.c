@@ -649,6 +649,8 @@ retry:
 					sched_data->service_tree[i].wsum;
 			}
 		}
+		if (!wsum)
+			continue;
 		limit = DIV_ROUND_CLOSEST(limit * entity->weight, wsum);
 		if (entity->allocated >= limit) {
 			bfq_log_bfqq(bfqq->bfqd, bfqq,
@@ -7617,6 +7619,7 @@ MODULE_ALIAS("bfq-iosched");
 static int __init bfq_init(void)
 {
 	int ret;
+	char msg[60] = "BFQ I/O-scheduler: BFQ-CachyOS v6.3";
 
 #ifdef CONFIG_BFQ_GROUP_IOSCHED
 	ret = blkcg_policy_register(&blkcg_policy_bfq);
@@ -7647,6 +7650,11 @@ static int __init bfq_init(void)
 	ret = elv_register(&iosched_bfq_mq);
 	if (ret)
 		goto slab_kill;
+
+#ifdef CONFIG_BFQ_GROUP_IOSCHED
+	strcat(msg, " (with cgroups support)");
+#endif
+	pr_info("%s", msg);
 
 	return 0;
 
