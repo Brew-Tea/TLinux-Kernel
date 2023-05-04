@@ -12,7 +12,6 @@ jobs:
       uses: actions/checkout@v2
     - name: Fix some package
       run: |
-          sudo apt remove containerd runc
           sudo apt install -y moby-containerd moby-runc
     - name: Install dependencies
       run: |
