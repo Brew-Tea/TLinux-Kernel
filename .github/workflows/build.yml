@@ -12,23 +12,23 @@ jobs:
       uses: actions/checkout@v2
     - name: Install dependencies
       run: |
-          apt-get -y update && apt-get install -y apt-utils gnupg2 wget ca-certificates apt-transport-https 
-          alien autoconf automake cmake dpkg-dev file make patch 
-          libc6-dev locales git curl sudo zip unzip tar xz-utils make 
-          cmake lz4 zstd dracut docker.io python3 
-          software-properties-common clang gcc llvm lldb lld clangd 
-          flex bison perl build-essential:native bc rsync 
-          libelf-dev:native libssl-dev:native bison 
-          libssl-dev git zip flex cpio openssl 
+          sudo apt-get -y update && sudo apt-get install -y apt-utils gnupg2 wget ca-certificates apt-transport-https \
+          alien autoconf automake cmake dpkg-dev file make patch \
+          libc6-dev locales git curl sudo zip unzip tar xz-utils make \
+          cmake lz4 zstd dracut docker.io python3 \
+          software-properties-common clang gcc llvm lldb lld clangd \
+          flex bison perl build-essential:native bc rsync \
+          libelf-dev:native libssl-dev:native bison \
+          libssl-dev git zip flex cpio openssl \
           ibncurses5-dev openjdk-11-jdk
     - name: Install Clang
       run: |
           wget -nv -O - https://apt.llvm.org/llvm-snapshot.gpg.key | apt-key add -
-          echo "deb http://apt.llvm.org/bullseye llvm-toolchain-bullseye main" | tee /etc/apt/sources.list.d/llvm.list
-          apt-get -qq update
-          apt-get -qqy -t llvm-toolchain-bullseye install clang clang-tidy clang-format lld
+          echo "deb http://apt.llvm.org/bullseye llvm-toolchain-bullseye main" | sudo tee /etc/apt/sources.list.d/llvm.list
+          sudo apt-get -qq update
+          sudo apt-get -qqy -t llvm-toolchain-bullseye install clang clang-tidy clang-format lld
           for f in /usr/lib/llvm/bin/*; do sudo ln -sf "$f" /usr/bin; done
-          rm -rf /var/lib/apt/lists/*
+          sudo rm -rf /var/lib/apt/lists/*
     - name: Build and package kernel
       run: |
           wget https://github.com/Brew-Tea/scripts-build/raw/master/x86/build.sh
