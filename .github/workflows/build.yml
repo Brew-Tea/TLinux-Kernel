@@ -20,13 +20,13 @@ jobs:
           flex bison perl build-essential:native bc rsync \
           libelf-dev:native libssl-dev:native bison \
           libssl-dev git zip flex cpio openssl \
-          ibncurses5-dev openjdk-11-jdk
+          libncurses5-dev openjdk-11-jdk
     - name: Install Clang
       run: |
           wget -nv -O - https://apt.llvm.org/llvm-snapshot.gpg.key | apt-key add -
-          echo "deb http://apt.llvm.org/bullseye llvm-toolchain-bullseye main" | sudo tee /etc/apt/sources.list.d/llvm.list
+          echo "deb http://apt.llvm.org/jammy llvm-toolchain-jammy main" | sudo tee /etc/apt/sources.list.d/llvm.list
           sudo apt-get -qq update
-          sudo apt-get -qqy -t llvm-toolchain-bullseye install clang clang-tidy clang-format lld
+          sudo apt-get -qqy -t llvm-toolchain-jammy install clang clang-tidy clang-format lld
           for f in /usr/lib/llvm/bin/*; do sudo ln -sf "$f" /usr/bin; done
           sudo rm -rf /var/lib/apt/lists/*
     - name: Build and package kernel
