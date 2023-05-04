@@ -19,7 +19,7 @@ jobs:
           sudo apt-get -y update && sudo apt-get install -y apt-utils gnupg2 wget ca-certificates apt-transport-https \
           alien autoconf automake cmake dpkg-dev file make patch \
           libc6-dev locales git curl sudo zip unzip tar xz-utils make \
-          cmake lz4 zstd dracut docker.io python3 \
+          cmake lz4 zstd dracut python3 \
           software-properties-common clang gcc llvm lldb lld clangd \
           flex bison perl build-essential:native bc rsync \
           libelf-dev:native libssl-dev:native bison \
