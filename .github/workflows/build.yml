@@ -2,7 +2,7 @@ name: Build and package kernel
 
 on:
   push:
-    branches: [ blazing ]
+    branches: [ T-6.2 ]
 
 jobs:
   build-and-package:
@@ -35,4 +35,4 @@ jobs:
           chmod +x build.sh
           ./build.sh --debian
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
