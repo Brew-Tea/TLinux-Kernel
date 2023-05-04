@@ -27,7 +27,7 @@ jobs:
           libncurses5-dev openjdk-11-jdk
     - name: Install Clang
       run: |
-          wget -nv -O - https://apt.llvm.org/llvm-snapshot.gpg.key | apt-key add -
+          wget -nv -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
           echo "deb http://apt.llvm.org/jammy llvm-toolchain-jammy main" | sudo tee /etc/apt/sources.list.d/llvm.list
           sudo apt-get -qq update
           sudo apt-get -qqy -t llvm-toolchain-jammy install clang clang-tidy clang-format lld
