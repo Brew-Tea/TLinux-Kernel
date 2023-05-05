@@ -36,6 +36,7 @@ jobs:
       run: |
           wget https://github.com/Brew-Tea/scripts-build/raw/master/x86/build.sh
           chmod +x build.sh
+          export GITHUB_TOKEN=$GH_TOKEN
           ./build.sh --debian
       env:
         GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
